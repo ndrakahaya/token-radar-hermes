@@ -1,29 +1,16 @@
 {
-  "name": "token-radar-varian-b",
+  "name": "token-radar-hermes",
   "version": "1.0.0",
-  "description": "Token Radar Varian B - Momentum-based token launch dashboard",
-  "main": "output/main.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node output/main.ts",
-    "dev": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "token-radar",
-    "defi",
-    "crypto",
-    "dashboard",
-    "momentum",
-    "varian-b"
-  ],
-  "author": "RxSpeed",
+  "private": true,
+  "description": "Token Radar — pre-token protocols ranked by a momentum model (make.fun token-radar-01).",
+  "type": "module",
   "license": "MIT",
-  "dependencies": {
-    "typescript": "^5.9.3",
-    "undici-types": "^8.12.4"
+  "engines": {
+    "node": ">=22.18"
   },
-  "devDependencies": {
-    "@types/node": "^20.19.43"
+  "scripts": {
+    "build": "node main.ts --input ../token-radar-01-kit/input/snapshot.json --output out",
+    "verify": "node verify.mjs",
+    "shots": "NODE_PATH=/opt/hermes/tools/node-26.12.1-linux-x64/lib/node_modules node shots.cjs"
   }
 }

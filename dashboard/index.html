@@ -3,76 +3,122 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Token Radar Varian B: Pre-token Protocols Ranked by Momentum</title>
+<title>Token Radar — pre-token protocols, ranked by momentum</title>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<a class="skip" href="#board">Skip to the board</a>
-<header class="header">
-  <h1>Token Launch Radar</h1>
-  <p class="subtitle">Pre-token protocols ranked by momentum-based implied value</p>
-  <div class="controls">
-    <select id="view" class="view-select">
-      <option value="board">Board View</option>
-      <option value="live">Live Tokens</option>
-      <option value="compare">Compare Protocols</option>
-    </select>
-    <input type="text" id="search" placeholder="Search protocols..." class="search-input">
-    <div class="filter-group">
-      <select id="category-filter" class="filter-select">
-        <option value="">All Categories</option>
-      </select>
-      <select id="chain-filter" class="filter-select">
-        <option value="">All Chains</option>
-      </select>
-      <select id="tvl-filter" class="filter-select">
-        <option value="">All TVLs</option>
-        <option value="100M">$100M+</option>
-        <option value="1B">$1B+</option>
-        <option value="5B">$5B+</option>
-      </select>
-    </div>
-  </div>
-</header>
+<div class="shell">
 
-<main id="board" tabindex="-1" aria-busy="true">
-  <div class="loading" id="loading">Loading protocols...</div>
-  <div class="board-container" id="board-container" style="display: none;">
-    <div class="board-header">
-      <h2>Ranked Board</h2>
-      <div class="board-stats">
-        <span id="watchlist-count"></span>
-        <span id="board-count"></span>
-        <span id="model-info"></span>
+  <header class="masthead">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <h1>Token Radar</h1>
+        <p class="tagline">Protocols whose token does not exist yet, ranked by a momentum model over TVL, growth, age and chain reach.</p>
       </div>
     </div>
-    <div class="board" id="board-list"></div>
-  </div>
-  
-  <div class="live-container" id="live-container" style="display: none;">
-    <h2>Live Tokens</h2>
-    <div class="live-list" id="live-list"></div>
-  </div>
-  
-  <div class="compare-container" id="compare-container" style="display: none;">
-    <h2>Compare Protocols</h2>
-    <div class="compare-selector">
-      <select id="compare-protocol-1">
-        <option value="">Select first protocol</option>
-      </select>
-      <select id="compare-protocol-2">
-        <option value="">Select second protocol</option>
-      </select>
-    </div>
-    <div class="compare-results" id="compare-results"></div>
-  </div>
-  
-  <div class="detail-container" id="detail-container" style="display: none;">
-    <button class="back-button" onclick="showBoard()">← Back to Board</button>
-    <div class="detail-content" id="detail-content"></div>
-  </div>
-</main>
+    <dl class="facts">
+      <div><dt>Model</dt><dd id="fact-model">momentum-b</dd></div>
+      <div><dt>Snapshot</dt><dd id="fact-asof">—</dd></div>
+      <div><dt>On the board</dt><dd id="fact-rows">—</dd></div>
+      <div><dt>Watchlist</dt><dd id="fact-watch">—</dd></div>
+    </dl>
+  </header>
 
+  <section class="model-strip" aria-label="How the model scores a row">
+    <p><b>implied</b> = TVL × 0.20 × growth × maturity × chains</p>
+    <p><span class="chip">growth</span> ±0.8 per +100%, ±0.4 per −100%, clamped −50…+150%</p>
+    <p><span class="chip">maturity</span> peaks at 2 years, 0.70 at birth, 0.78 floor after 3</p>
+    <p><span class="chip">chains</span> +0.04 each beyond the first, capped 1.20</p>
+    <p><span class="chip">risk</span> 0…100 from age, swing and footprint — shown, never ranked</p>
+  </section>
+
+  <div id="loading" class="loading" role="status">Loading the board…</div>
+
+  <section id="app" class="app" hidden>
+
+    <div class="toolbar" role="search">
+      <label class="field grow">
+        <span>Search</span>
+        <input id="q" type="search" placeholder="protocol, category or chain" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Category</span>
+        <select id="cat"><option value="">all categories</option></select>
+      </label>
+      <label class="field">
+        <span>Chain</span>
+        <select id="chain"><option value="">all chains</option></select>
+      </label>
+      <label class="field">
+        <span>TVL</span>
+        <select id="mintvl">
+          <option value="0">any TVL</option>
+          <option value="10000000">≥ $10M</option>
+          <option value="25000000">≥ $25M</option>
+          <option value="100000000">≥ $100M</option>
+          <option value="1000000000">≥ $1B</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Sort</span>
+        <select id="sort">
+          <option value="rank">implied value</option>
+          <option value="tvl">TVL</option>
+          <option value="growth">7d growth</option>
+          <option value="risk">risk, high first</option>
+          <option value="age">age, oldest first</option>
+          <option value="name">name</option>
+        </select>
+      </label>
+      <label class="toggle"><input id="wl" type="checkbox"><span>Watchlist only</span></label>
+      <button id="reset" class="btn ghost" type="button">Reset</button>
+    </div>
+
+    <div class="statusbar">
+      <p id="count" class="count">—</p>
+      <p id="compare-hint" class="hint">Tick two rows to compare them side by side.</p>
+      <div id="compare-tray" class="tray" hidden>
+        <span id="tray-label"></span>
+        <button id="compare-go" class="btn" type="button">Compare</button>
+        <button id="compare-clear" class="btn ghost" type="button">Clear</button>
+      </div>
+    </div>
+
+    <div class="table" role="table" aria-label="Ranked board">
+      <div class="thead" role="row">
+        <span role="columnheader" class="c-pick"></span>
+        <span role="columnheader" class="c-rank">Rank</span>
+        <span role="columnheader" class="c-name">Protocol</span>
+        <span role="columnheader" class="c-cat">Category</span>
+        <span role="columnheader" class="c-chain">Chains</span>
+        <span role="columnheader" class="c-num" data-col="tvl">TVL</span>
+        <span role="columnheader" class="c-num" data-col="growth">7d</span>
+        <span role="columnheader" class="c-risk" data-col="risk">Risk</span>
+        <span role="columnheader" class="c-num" data-col="rank">Implied value</span>
+      </div>
+      <div id="rows" class="tbody" role="rowgroup"></div>
+      <div class="scroll-foot"><span id="visible-range">—</span><span>scroll the board · click a row for its farm plan</span></div>
+      <p id="empty" class="empty" hidden>No protocol on the board matches these filters. Widen the TVL floor or clear the search.</p>
+    </div>
+
+    <footer class="foot">
+      <p>Implied value is the model's claim from one sealed snapshot, not a price, a guarantee or advice. Every row names a protocol whose public index record carries no token; that record is not proof.</p>
+      <p id="source" class="src">—</p>
+    </footer>
+  </section>
+
+  <section id="detail" class="panel" hidden aria-label="Protocol detail">
+    <button class="btn ghost back" type="button" onclick="showBoard()">← Back to the board</button>
+    <div id="detail-body"></div>
+  </section>
+
+  <section id="compare" class="panel" hidden aria-label="Two protocols compared">
+    <button class="btn ghost back" type="button" onclick="showBoard()">← Back to the board</button>
+    <div id="compare-body"></div>
+  </section>
+
+</div>
 <script src="../data.js"></script>
 <script src="app.js"></script>
 </body>
