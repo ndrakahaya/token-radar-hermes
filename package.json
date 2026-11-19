@@ -1,0 +1,29 @@
+{
+  "name": "token-radar-varian-b",
+  "version": "1.0.0",
+  "description": "Token Radar Varian B - Momentum-based token launch dashboard",
+  "main": "output/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node output/main.ts",
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "token-radar",
+    "defi",
+    "crypto",
+    "dashboard",
+    "momentum",
+    "varian-b"
+  ],
+  "author": "RxSpeed",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.9.3",
+    "undici-types": "^8.12.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43"
+  }
+}

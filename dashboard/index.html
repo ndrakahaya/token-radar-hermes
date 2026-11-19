@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar Varian B: Pre-token Protocols Ranked by Momentum</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<header class="header">
+  <h1>Token Launch Radar</h1>
+  <p class="subtitle">Pre-token protocols ranked by momentum-based implied value</p>
+  <div class="controls">
+    <select id="view" class="view-select">
+      <option value="board">Board View</option>
+      <option value="live">Live Tokens</option>
+      <option value="compare">Compare Protocols</option>
+    </select>
+    <input type="text" id="search" placeholder="Search protocols..." class="search-input">
+    <div class="filter-group">
+      <select id="category-filter" class="filter-select">
+        <option value="">All Categories</option>
+      </select>
+      <select id="chain-filter" class="filter-select">
+        <option value="">All Chains</option>
+      </select>
+      <select id="tvl-filter" class="filter-select">
+        <option value="">All TVLs</option>
+        <option value="100M">$100M+</option>
+        <option value="1B">$1B+</option>
+        <option value="5B">$5B+</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<main id="board" tabindex="-1" aria-busy="true">
+  <div class="loading" id="loading">Loading protocols...</div>
+  <div class="board-container" id="board-container" style="display: none;">
+    <div class="board-header">
+      <h2>Ranked Board</h2>
+      <div class="board-stats">
+        <span id="watchlist-count"></span>
+        <span id="board-count"></span>
+        <span id="model-info"></span>
+      </div>
+    </div>
+    <div class="board" id="board-list"></div>
+  </div>
+  
+  <div class="live-container" id="live-container" style="display: none;">
+    <h2>Live Tokens</h2>
+    <div class="live-list" id="live-list"></div>
+  </div>
+  
+  <div class="compare-container" id="compare-container" style="display: none;">
+    <h2>Compare Protocols</h2>
+    <div class="compare-selector">
+      <select id="compare-protocol-1">
+        <option value="">Select first protocol</option>
+      </select>
+      <select id="compare-protocol-2">
+        <option value="">Select second protocol</option>
+      </select>
+    </div>
+    <div class="compare-results" id="compare-results"></div>
+  </div>
+  
+  <div class="detail-container" id="detail-container" style="display: none;">
+    <button class="back-button" onclick="showBoard()">← Back to Board</button>
+    <div class="detail-content" id="detail-content"></div>
+  </div>
+</main>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
